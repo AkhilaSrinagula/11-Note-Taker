@@ -24,11 +24,40 @@ router.post("/api/notes", (req, res) => {
 
     })
   });
-  // noteData.push(req.body);
-  // fs.writeFile("./db/db.json", JSON.stringify(noteData), (err) => {
-  //   if (err) throw err;
-  // });
-  // res.json(noteData);
 });
+
+router.delete("/api/notes/:id", (req, res) => {
+    let deleteNote = req.params.id;
+    fs.readFile("./db/db.json", (err, data) => {
+        if (err) {
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+        try {
+            let oldNotes = JSON.parse(data)
+            oldNotes.push(newNote);
+            console.log(oldNotes);
+        } catch(e) {
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+        for (let i = 0; i < oldNotes.length; i++) {
+            if (oldNotes[i].id === deleteNote) {
+                oldNotes.splice(i, 1);
+                return;
+            }
+        }
+        fs.writeFile(__dirname + "/db/db.json", JSON.stringify(oldNotes), (err) => {
+            if (err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+            res.send("Successfully deleted");
+        });
+    })
+})
 
 module.exports = router;
